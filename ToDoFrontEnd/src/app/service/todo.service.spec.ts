@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
 import { TodoApiService } from '../api/todo.api.service';
 import { ToDoItem } from '../model/ToDoItem';
 import { TodoStoreService } from './todo-store.service';
@@ -31,9 +32,22 @@ describe('TodoService', () => {
   it('should create todoItem via mockHttp post', () => {
     // given
     const toDoItem = new ToDoItem(9, 'title', 'description', true);
+    httpClientSpy.post.and.returnValue(of({}));
     // when
     service.create(toDoItem);
     // then
     expect(httpClientSpy.post).toHaveBeenCalledWith('https://635fc244ca0fe3c21aa3d012.mockapi.io/api/todos', toDoItem);
+  });
+
+  it('should response error when create fail', () => {
+    // given
+    const toDoItem = new ToDoItem(9, 'title', 'description', true);
+    httpClientSpy.post.and.returnValue(throwError(() => ({
+      errorMessage: 'create failed'
+    })));
+    // when
+    service.create(toDoItem);
+    // then
+    expect(service.errorMessage).toEqual('create failed')
   });
 });

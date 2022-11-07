@@ -7,6 +7,7 @@ import { TodoStoreService } from './todo-store.service';
   providedIn: 'root'
 })
 export class TodoService {
+  public errorMessage?: string;
 
   private _selectedTodoItem: ToDoItem = {} as ToDoItem;
   private _updatingTodoItem: ToDoItem = {} as ToDoItem;
@@ -23,7 +24,12 @@ export class TodoService {
   }
 
   public create(todoItem: ToDoItem): void {
-    this.todoApi.create(todoItem);
+    this.todoApi.create(todoItem).subscribe({
+      next: response => { },
+      error: error => {
+        this.errorMessage = error.errorMessage
+      }
+    });
   }
 
   public update(updateTodoItem: ToDoItem): void {
